@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GI-GU-Endo Practice Quiz Directory</title>
+    <title>GI-GU-ENDO Practice Quiz Directory</title>
     
-    <!-- Umami Analytics Tracker -->
     <script defer src="https://cloud.umami.is/script.js" data-website-id="3cb2ed63-b477-4c85-a83f-7352712d49c9"></script>
 
     <style>
@@ -224,22 +223,18 @@
 
     <header id="main-header">
         <div class="header-top">
-            <h1>GI-GU-Endo Practice Quiz Directory</h1>
+            <h1>GI-GU-ENDO Practice Quiz Directory</h1>
             <div class="controls-wrapper">
                 
-                <!-- Topic Search Filter -->
                 <input type="text" id="topic-search" class="search-box" placeholder="Search topics..." onkeyup="filterCards()">
                 
-                <!-- Live Tracker -->
                 <div class="live-tracker" title="Visitors Today (Eastern Time)">
                     <span class="live-dot"></span>
                     <span id="visitor-count-display">Visitors Today: ...</span>
                 </div>
                 
-                <!-- Pin Button -->
                 <button class="pin-btn pin-active" id="pin-btn" onclick="toggleHeader()" title="Pin/Unpin Header">📌</button>
                 
-                <!-- Theme Selector -->
                 <div class="theme-control">
                     <select id="theme-select" onchange="changeTheme(this.value)">
                         <option value="dark">Modern Dark</option>
@@ -253,7 +248,6 @@
                 </div>
             </div>
             
-            <!-- Custom Theme Color Pickers -->
             <div class="custom-builder" id="custom-builder">
                 <div class="color-picker-group">
                     <label>Background:</label>
@@ -274,13 +268,11 @@
             </div>
         </div>
         
-        <!-- Dynamic Navigation Bar -->
         <div class="section-nav" id="section-nav"></div>
     </header>
 
     <div class="container" id="directory-root">
         
-        <!-- WEEK 36 -->
         <div class="week-section" id="week-36">
             <h2 class="week-title" onclick="toggleWeek('week-36')">Week 36 <span class="toggle-icon">▼</span></h2>
             
@@ -294,7 +286,7 @@
                             <li>Upper GI Histology</li>
                         </ul>
                     </div>
-                    <a href="#" class="btn-link btn-disabled">Link Pending</a>
+                    <a href="https://ibecerramcg.github.io/GIGUENDO-Week-36-Quiz-1/" class="btn-link">Take Quiz</a>
                 </div>
 
                 <div class="day-card">
@@ -346,7 +338,7 @@
                 displayEl.textContent = `Visitors Today: ${data.visitors}`;
             } catch (err) {
                 console.warn("View counter failed:", err);
-                displayEl.textContent = `Visitors Today: -`;
+                displayEl.textContent = `Visitors: -`;
             }
         }
 
@@ -372,6 +364,14 @@
             const savedPinState = localStorage.getItem('headerPinned');
             toggleHeader(savedPinState !== 'false');
 
+            // Initialize Collapsed Weeks
+            const collapsedWeeks = JSON.parse(localStorage.getItem('collapsedWeeks') || '{}');
+            document.querySelectorAll('.week-section').forEach(section => {
+                if (collapsedWeeks[section.id]) {
+                    section.classList.add('collapsed');
+                }
+            });
+
             // Delay fetching visitors
             setTimeout(() => {
                 fetchDailyVisitors(); 
@@ -383,6 +383,11 @@
         function toggleWeek(sectionId) {
             const section = document.getElementById(sectionId);
             section.classList.toggle('collapsed');
+            
+            // Save state to localStorage
+            const states = JSON.parse(localStorage.getItem('collapsedWeeks') || '{}');
+            states[sectionId] = section.classList.contains('collapsed');
+            localStorage.setItem('collapsedWeeks', JSON.stringify(states));
         }
 
         // --- Search / Filter Logic ---
