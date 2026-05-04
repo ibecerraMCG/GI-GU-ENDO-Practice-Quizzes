@@ -27,7 +27,9 @@
             --text-main: #e0e0e0; --text-muted: #888888; --text-accent: #90caf9;
             --border-color: #333333; --highlight-bg: #1a1a1a;
             --button-bg: #90caf9; --button-text: #000000; --button-hover: #42a5f5;
-        }[data-theme="legacy-dark"] {
+        }
+
+        [data-theme="legacy-dark"] {
             --bg-body: #2d343e; --bg-card: #3c424f; --bg-header: #3c424f;
             --text-main: #e8e6e3; --text-muted: #b0c4de; --text-accent: #8ab4f8;
             --border-color: #555; --highlight-bg: #454c5a;
@@ -186,6 +188,17 @@
         }
         .topic-list { margin: 0; padding-left: 1.2rem; color: var(--text-main); font-weight: 500; }
         .topic-list li { margin-bottom: 0.4rem; }
+
+        /* Sub-notes for things like "Not included" */
+        .sub-note {
+            font-size: 0.85em;
+            color: var(--text-muted);
+            list-style: none;
+            margin-left: -1.2rem;
+            margin-top: 0.2rem;
+            margin-bottom: 0.5rem;
+            font-style: italic;
+        }
 
         .btn-link {
             background-color: var(--button-bg); color: var(--button-text);
@@ -439,6 +452,51 @@
                         </ul>
                     </div>
                     <a href="https://ibecerramcg.github.io/GIGUENDO-Week-40-Quiz-3/" class="btn-link">Take Quiz</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- WEEK 41 -->
+        <div class="week-section" id="week-41">
+            <h2 class="week-title" onclick="toggleWeek('week-41')">Week 41 <span class="toggle-icon">▼</span></h2>
+            
+            <div class="week-content">
+                <div class="day-card">
+                    <div class="day-info">
+                        <div class="day-badge">Part 1</div>
+                        <ul class="topic-list">
+                            <li>Regulation of Acid-Base</li>
+                            <li>Control Micturition & Diuretics</li>
+                        </ul>
+                    </div>
+                    <a href="#" class="btn-link btn-disabled">Link Pending</a>
+                </div>
+
+                <div class="day-card">
+                    <div class="day-info">
+                        <div class="day-badge">Part 2</div>
+                        <ul class="topic-list">
+                            <li>Nephritic Syndrome</li>
+                            <li>Nephrotic Syndrome</li>
+                            <li>Disorders of Potassium Homeostasis</li>
+                            <li>Acid-Base Disorders and Clinical Correlations</li>
+                        </ul>
+                    </div>
+                    <a href="#" class="btn-link btn-disabled">Link Pending</a>
+                </div>
+
+                <div class="day-card">
+                    <div class="day-info">
+                        <div class="day-badge">Part 3</div>
+                        <ul class="topic-list">
+                            <li>Fluid and Electrolyte Clinical Correlations</li>
+                            <li>Sepsis</li>
+                            <li>Bladder Dysfunction</li>
+                            <li>Non-Glomerular Diseases of the Kidney</li>
+                            <li class="sub-note">(GIGU Imaging Session not included due to visual aspects)</li>
+                        </ul>
+                    </div>
+                    <a href="#" class="btn-link btn-disabled">Link Pending</a>
                 </div>
             </div>
         </div>
