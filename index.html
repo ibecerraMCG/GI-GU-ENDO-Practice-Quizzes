@@ -27,9 +27,7 @@
             --text-main: #e0e0e0; --text-muted: #888888; --text-accent: #90caf9;
             --border-color: #333333; --highlight-bg: #1a1a1a;
             --button-bg: #90caf9; --button-text: #000000; --button-hover: #42a5f5;
-        }
-
-        [data-theme="legacy-dark"] {
+        }[data-theme="legacy-dark"] {
             --bg-body: #2d343e; --bg-card: #3c424f; --bg-header: #3c424f;
             --text-main: #e8e6e3; --text-muted: #b0c4de; --text-accent: #8ab4f8;
             --border-color: #555; --highlight-bg: #454c5a;
@@ -109,13 +107,13 @@
         }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- Live Viewer Tracker Widget --- */
+        /* --- Live Viewer Tracker & Update Widgets --- */
         .live-tracker {
             display: flex; align-items: center; gap: 8px;
             background-color: var(--bg-card); border: 1px solid var(--border-color);
             padding: 0 12px; border-radius: 6px; font-size: 0.9rem;
             color: var(--text-main); height: 34px; font-family: monospace;
-            font-weight: bold; cursor: default;
+            font-weight: bold; cursor: default; white-space: nowrap;
         }
         .live-dot {
             width: 8px; height: 8px; background-color: #22c55e;
@@ -123,6 +121,20 @@
         }
         @keyframes pulse {
             0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+            70% { box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+        }
+        
+        .update-pulse-btn {
+            background-color: #22c55e; color: #ffffff; border: none;
+            padding: 0 15px; border-radius: 6px; font-size: 0.9rem; font-weight: bold;
+            cursor: pointer; height: 34px; display: flex; align-items: center;
+            animation: pulse-green 2s infinite; white-space: nowrap;
+            transition: opacity 0.2s;
+        }
+        .update-pulse-btn:hover { opacity: 0.9; }
+        @keyframes pulse-green {
+            0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.6); }
             70% { box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
             100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
         }
@@ -229,8 +241,9 @@
     <header id="main-header">
         <div class="header-top">
             <h1>GI-GU-ENDO Practice Quiz Directory</h1>
+            
+            <!-- Restored Controls Wrapper (Exactly as it was visually) -->
             <div class="controls-wrapper">
-                
                 <input type="text" id="topic-search" class="search-box" placeholder="Search topics..." onkeyup="filterCards()">
                 
                 <div class="live-tracker" title="Visitors Today (Eastern Time)">
@@ -273,7 +286,17 @@
             </div>
         </div>
         
-        <div class="section-nav" id="section-nav"></div>
+        <!-- NEW layout: Navigation and Last Updated on the same row -->
+        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; flex-wrap: wrap; gap: 10px;">
+            <div class="section-nav" id="section-nav"></div>
+            
+            <div id="last-updated-container" style="font-family: monospace; font-size: 0.85rem; color: var(--text-muted); display: flex; align-items: center;">
+                <span id="last-updated-display">Last Updated: Checking...</span>
+                <button id="update-refresh-btn" class="update-pulse-btn" onclick="window.location.reload(true)" style="display: none; height: 28px; font-size: 0.85rem; padding: 0 10px; line-height: 1;" title="A new quiz was posted! Click to refresh the page.">
+                    ✨ New Update! (Refresh)
+                </button>
+            </div>
+        </div>
     </header>
 
     <div class="container" id="directory-root">
@@ -526,6 +549,42 @@
             }
         }
 
+        // --- NEW: Active Polling for Site Updates ---
+        let initialLastModified = null;
+
+        async function checkSiteUpdate() {
+            try {
+                // We add a random timestamp parameter to the URL to completely bypass the browser cache and force it to check GitHub servers
+                const cacheBusterUrl = window.location.href.split('?')[0] + '?cb=' + new Date().getTime();
+                
+                // Fetching via 'HEAD' only grabs the hidden data (headers), saving data usage!
+                const response = await fetch(cacheBusterUrl, { method: 'HEAD', cache: 'no-store' });
+                const lastModifiedHeader = response.headers.get('Last-Modified');
+                
+                if (lastModifiedHeader) {
+                    const lastModifiedDate = new Date(lastModifiedHeader);
+                    
+                    // Format date to look like "May 5, 4:30 PM"
+                    const formattedDate = lastModifiedDate.toLocaleString([], {
+                        month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                    });
+                    
+                    document.getElementById('last-updated-display').textContent = `Last Updated: ${formattedDate}`;
+
+                    // Compare current version to version grabbed on page load
+                    if (!initialLastModified) {
+                        initialLastModified = lastModifiedDate.getTime();
+                    } else if (lastModifiedDate.getTime() > initialLastModified) {
+                        // GitHub has pushed a new version! Show the refresh button
+                        document.getElementById('update-refresh-btn').style.display = 'inline-flex';
+                        document.getElementById('last-updated-display').style.display = 'none'; // Hide the text to make room for button
+                    }
+                }
+            } catch (err) {
+                console.warn("Could not check for site updates:", err);
+            }
+        }
+
         // --- Core Init Logic ---
         function initDirectory() {
             // Build Quick Navigation
@@ -556,11 +615,15 @@
                 }
             });
 
-            // Delay fetching visitors
-            setTimeout(() => {
-                fetchDailyVisitors(); 
-                setInterval(fetchDailyVisitors, 60000);
-            }, 1500);
+            // Execute immediately with NO delay
+            fetchDailyVisitors(); 
+            checkSiteUpdate();
+            
+            // Continue polling every 60 seconds
+            setInterval(() => {
+                fetchDailyVisitors();
+                checkSiteUpdate();
+            }, 60000);
         }
 
         // --- Collapsible Week Logic ---
