@@ -569,6 +569,7 @@
                             <li>Male Reproductive Histology</li>
                             <li>Development of the Reproductive System</li>
                             <li>Tumors of the Male Genitals</li>
+                            <li class="sub-note">Updated to fix unintended reveal of hidden LOs following answer submission</li>
                         </ul>
                     </div>
                     <a href="https://ibecerramcg.github.io/GIGUENDO-Week-43-Quiz-1/" class="btn-link">Take Quiz</a>
@@ -597,38 +598,6 @@
                         </ul>
                     </div>
                     <a href="https://ibecerramcg.github.io/GIGUENDO-Week-43-Quiz-3/" class="btn-link">Take Quiz</a>
-                </div>
-            </div>
-        </div>
-
-        <!-- WEEK 44 -->
-        <div class="week-section" id="week-44">
-            <h2 class="week-title" onclick="toggleWeek('week-44')">Week 44 <span class="toggle-icon">▼</span></h2>
-            
-            <div class="week-content">
-                <div class="day-card">
-                    <div class="day-info">
-                        <div class="day-badge">Part 1</div>
-                        <ul class="topic-list">
-                            <li>Complications of Pregnancy</li>
-                            <li>Pathology of the Uterus and Ovaries</li>
-                            <li>Abnormal Uterine Bleeding and Pelvic Pain</li>
-                        </ul>
-                    </div>
-                    <a href="#" class="btn-link btn-disabled">Link Pending</a>
-                </div>
-
-                <div class="day-card">
-                    <div class="day-info">
-                        <div class="day-badge">Part 2</div>
-                        <ul class="topic-list">
-                            <li>Uterine Drugs and Drugs in Pregnancy</li>
-                            <li>Contraceptives and Lactation</li>
-                            <li>Pathology of the Breast</li>
-                            <li>Physiological Changes of Pregnancy</li>
-                        </ul>
-                    </div>
-                    <a href="#" class="btn-link btn-disabled">Link Pending</a>
                 </div>
             </div>
         </div>
@@ -800,4 +769,31 @@
             if (savedColors) {
                 document.getElementById('color-bg').value = savedColors.bg;
                 document.getElementById('color-card').value = savedColors.card;
-   
+                document.getElementById('color-text').value = savedColors.text;
+                document.getElementById('color-accent').value = savedColors.accent;
+                updateCustomTheme();
+            } else {
+                updateCustomTheme(); // Set to the default input values
+            }
+        }
+
+        // --- Sticky Header Pin Logic ---
+        function toggleHeader(forceState) {
+            const isCurrentlyPinned = !mainHeader.classList.contains('unpinned');
+            const newState = (typeof forceState === 'boolean') ? forceState : !isCurrentlyPinned;
+
+            if (newState) {
+                mainHeader.classList.remove('unpinned');
+                pinBtn.classList.add('pin-active');
+                localStorage.setItem('headerPinned', 'true');
+            } else {
+                mainHeader.classList.add('unpinned');
+                pinBtn.classList.remove('pin-active');
+                localStorage.setItem('headerPinned', 'false');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', initDirectory);
+    </script>
+</body>
+</html>
